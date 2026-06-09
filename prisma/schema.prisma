@@ -1,9 +1,11 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  // url is configured in prisma.config.ts (Prisma 7 requirement)
 }
 
 model Hotel {
