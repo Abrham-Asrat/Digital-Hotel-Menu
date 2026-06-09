@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Hotel {
+  id          String     @id @default(uuid())
+  name        String
+  slug        String     @unique 
+  logoUrl     String?    
+  themeColor  String     @default("#2563eb") 
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  tables     Table[]
+  categories Category[]
+  @@index([slug])
+}
+
+model Table {
+  id          String   @id @default(uuid())
+  hotelId     String
+  hotel       Hotel    @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  tableNumber String   
+  qrCodeUrl   String   
+  isActive    Boolean  @default(true) 
+  createdAt   DateTime @default(now())
+  @@unique([hotelId, tableNumber]) 
+  @@index([hotelId])
+}
+
+model Category {
+  id           String     @id @default(uuid())
+  hotelId      String
+  hotel        Hotel      @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  name         String     
+  displayOrder Int        @default(0) 
+  createdAt    DateTime   @default(now())
+  items MenuItem[]
+  @@index([hotelId])
+  @@index([hotelId, displayOrder]) 
+}
+
+model MenuItem {
+  id            String     @id @default(uuid())
+  categoryId    String
+  category      Category   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name          String
+  description   String     @db.Text 
+  price         Decimal    @db.Decimal(10, 2) 
+  prepTimeMins  Int        @default(0) 
+  imageUrl      String?    
+  isAvailable   Boolean    @default(true) 
+  dietaryTags   String[]   
+  displayOrder  Int        @default(0)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  @@index([categoryId])
+  @@index([categoryId, isAvailable]) 
+  @@index([categoryId, displayOrder])
+}
