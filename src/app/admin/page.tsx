@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { toggleAvailability } from '../actions';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const hotel = await prisma.hotel.findFirst({
     include: {
