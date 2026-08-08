@@ -2,14 +2,13 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   CATEGORIES,
   MENU_ITEMS,
-  UNIVERSAL_MENU_INFO,
   MenuItem,
 } from "../data/menuData";
 import QRScannerModal from "../components/QRScannerModal";
-import QRGeneratorModal from "../components/QRGeneratorModal";
 import FoodDetailModal from "../components/FoodDetailModal";
 import CartDrawer, { CartItem } from "../components/CartDrawer";
 import CallWaiterModal from "../components/CallWaiterModal";
@@ -26,12 +25,12 @@ import {
   Plus,
   Utensils,
   Smartphone,
-  Wand2,
-  CheckCircle2,
+  ShieldCheck,
+  ChefHat,
+  SlidersHorizontal,
 } from "lucide-react";
 
 export default function Home() {
-  // Dynamic deployment URL for QR codes
   const [currentOrigin, setCurrentOrigin] = useState("");
 
   useEffect(() => {
@@ -45,7 +44,6 @@ export default function Home() {
 
   // Modals state
   const [isScannerOpen, setIsScannerOpen] = useState(false);
-  const [isGeneratorOpen, setIsGeneratorOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWaiterOpen, setIsWaiterOpen] = useState(false);
   const [selectedFood, setSelectedFood] = useState<MenuItem | null>(null);
@@ -153,7 +151,7 @@ export default function Home() {
       <header className="sticky top-0 z-40 border-b border-white/10 bg-stone-950/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8">
           
-          {/* Brand Logo & Universal Badge */}
+          {/* Brand Logo & Menu Info */}
           <div className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
               <Utensils className="h-5 w-5" />
@@ -164,52 +162,23 @@ export default function Home() {
                   Linen & Lace
                 </h1>
                 <span className="hidden sm:inline-block rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-widest text-amber-300">
-                  Universal Digital Menu
+                  Digital Dining
                 </span>
               </div>
-              
-              {/* Universal QR Badge */}
-              <button
-                onClick={() => setIsScannerOpen(true)}
-                className="mt-0.5 flex items-center gap-1.5 text-xs text-amber-400/90 hover:text-amber-300 transition group"
-              >
-                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="font-semibold text-stone-200 group-hover:text-amber-300">
-                  Universal Table QR Active
-                </span>
-                <QrCode className="h-3 w-3 text-amber-400 ml-0.5" />
-              </button>
+              <p className="text-xs text-stone-400">Fine dining & table service</p>
             </div>
           </div>
 
           {/* Header Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* View/Scan Universal QR */}
-            <button
-              onClick={() => setIsScannerOpen(true)}
-              className="flex items-center gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-3.5 py-2 text-xs font-semibold text-amber-300 hover:bg-amber-500 hover:text-stone-950 transition shadow-sm"
-            >
-              <QrCode className="h-4 w-4" />
-              <span className="hidden md:inline">Universal QR Code</span>
-            </button>
-
-            {/* Staff Print QR Button */}
-            <button
-              onClick={() => setIsGeneratorOpen(true)}
-              className="hidden lg:flex items-center gap-1.5 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-stone-300 hover:bg-white/10 hover:text-white transition"
-              title="Print Universal Table QR Sticker"
-            >
-              <Wand2 className="h-4 w-4 text-amber-400" />
-              <span>Print Table QR Sticker</span>
-            </button>
-
             {/* Call Waiter Bell */}
             <button
               onClick={() => setIsWaiterOpen(true)}
-              className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-amber-400 hover:bg-amber-500/20 transition"
+              className="relative flex h-10 items-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 text-amber-400 hover:bg-amber-500/20 transition text-xs font-semibold"
               title="Call Waiter"
             >
-              <Bell className="h-5 w-5" />
+              <Bell className="h-4 w-4" />
+              <span className="hidden sm:inline">Call Waiter</span>
             </button>
 
             {/* Cart Button */}
@@ -225,77 +194,50 @@ export default function Home() {
                 </span>
               )}
             </button>
+
+            {/* Admin Link */}
+            <Link
+              href="/admin"
+              className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-stone-400 hover:bg-white/15 hover:text-white transition"
+              title="Manager Admin Portal"
+            >
+              <ChefHat className="h-4 w-4 text-amber-400" />
+            </Link>
           </div>
         </div>
       </header>
 
-      {/* HERO BANNER - UNIVERSAL QR */}
-      <section className="relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-stone-950 via-stone-900/60 to-[#0d0f12] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+      {/* GUEST HERO BANNER */}
+      <section className="relative overflow-hidden border-b border-white/10 bg-gradient-to-b from-stone-950 via-stone-900/60 to-[#0d0f12] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div className="absolute top-0 right-1/4 -z-10 h-96 w-96 rounded-full bg-amber-500/10 blur-[120px]" />
         
-        <div className="mx-auto max-w-7xl grid gap-8 lg:grid-cols-[1.2fr_0.8fr] items-center">
-          
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1.5 text-xs font-semibold text-amber-300 backdrop-blur-md">
-              <Sparkles className="h-3.5 w-3.5" />
-              One Single QR Code for All Venue Tables
-            </div>
-
-            <h2 className="font-[family-name:var(--font-playfair)] text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.15]">
-              Scan one QR code to view & order from any table.
-            </h2>
-
-            <p className="text-sm sm:text-base leading-relaxed text-stone-300 max-w-xl">
-              Guests at every table scan the exact same universal QR code sticker to access the full digital food menu, customize dishes, and order directly to their table or room.
-            </p>
-
-            <div className="flex flex-wrap items-center gap-3 pt-2">
-              <button
-                onClick={() => setIsScannerOpen(true)}
-                className="flex items-center gap-2 rounded-full bg-amber-500 px-6 py-3 text-xs font-extrabold text-stone-950 hover:bg-amber-400 transition shadow-lg shadow-amber-500/20"
-              >
-                <QrCode className="h-4 w-4" /> View Universal QR Code
-              </button>
-              <button
-                onClick={() => setIsWaiterOpen(true)}
-                className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-3 text-xs font-semibold text-white hover:bg-white/15 transition"
-              >
-                <Bell className="h-4 w-4 text-amber-400" /> Request Waiter Bell
-              </button>
-            </div>
+        <div className="mx-auto max-w-4xl text-center space-y-5">
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-semibold text-amber-300 backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5" />
+            Fine Dining Digital Menu • Scan & Order at Table
           </div>
 
-          {/* Universal QR Code Showcase Card */}
-          <div className="relative">
-            <div className="overflow-hidden rounded-3xl border border-amber-500/30 bg-stone-950/90 p-6 shadow-2xl backdrop-blur-xl space-y-4 text-center">
-              <div className="flex items-center justify-between border-b border-white/10 pb-4">
-                <div className="flex items-center gap-3 text-left">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/30">
-                    <Smartphone className="h-6 w-6" />
-                  </div>
-                  <div>
-                    <p className="text-xs uppercase tracking-widest text-amber-400 font-bold">Universal Venue Sticker</p>
-                    <p className="text-base font-bold text-white">All Tables QR Code</p>
-                  </div>
-                </div>
-                <span className="rounded-full bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
-                  <CheckCircle2 className="h-3.5 w-3.5" /> 1 Code For All
-                </span>
-              </div>
+          <h2 className="font-[family-name:var(--font-playfair)] text-4xl font-extrabold tracking-tight text-white sm:text-6xl lg:text-7xl leading-[1.12]">
+            Discover culinary artistry served directly to your table.
+          </h2>
 
-              <div className="inline-block rounded-2xl border-4 border-amber-500/40 bg-white p-3 shadow-lg my-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(currentOrigin || UNIVERSAL_MENU_INFO.qrUrl)}&color=0f172a&bgcolor=f8fafc`}
-                  alt="Universal Menu QR Code"
-                  className="h-40 w-40 rounded-lg object-contain mx-auto"
-                />
-              </div>
+          <p className="text-sm sm:text-base leading-relaxed text-stone-300 max-w-2xl mx-auto">
+            Browse our chef&apos;s handcrafted selections, filter dietary preferences, customize your favorite dishes, and order seamlessly from your table.
+          </p>
 
-              <div className="text-xs text-stone-400">
-                Place this single QR code on all dining tables, terrace counters, and hotel guest rooms.
-              </div>
-            </div>
+          <div className="flex flex-wrap items-center justify-center gap-3 pt-3">
+            <button
+              onClick={() => setIsWaiterOpen(true)}
+              className="flex items-center gap-2 rounded-full bg-amber-500 px-6 py-3 text-xs font-extrabold text-stone-950 hover:bg-amber-400 transition shadow-lg shadow-amber-500/20"
+            >
+              <Bell className="h-4 w-4" /> Request Server Bell
+            </button>
+            <button
+              onClick={() => setIsCartOpen(true)}
+              className="flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-6 py-3 text-xs font-semibold text-white hover:bg-white/15 transition"
+            >
+              <ShoppingCart className="h-4 w-4 text-amber-400" /> View Table Cart (${cartSubtotal.toFixed(2)})
+            </button>
           </div>
         </div>
       </section>
@@ -541,11 +483,6 @@ export default function Home() {
         isOpen={isScannerOpen}
         onClose={() => setIsScannerOpen(false)}
         onConfirmMenuScan={() => {}}
-      />
-
-      <QRGeneratorModal
-        isOpen={isGeneratorOpen}
-        onClose={() => setIsGeneratorOpen(false)}
       />
 
       <FoodDetailModal
