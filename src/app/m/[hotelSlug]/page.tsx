@@ -2,111 +2,105 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 
-// This is a Server Component. It runs on the server, fetches data, and sends pure HTML to the phone.
 export default async function GuestMenu({ params }: { params: Promise<{ hotelSlug: string }> }) {
-  // In Next.js 15, params is a Promise. We await it to get the slug.
   const { hotelSlug } = await params;
 
-  // 1. Fetch the hotel and its menu directly from the database
   const hotel = await prisma.hotel.findUnique({
     where: { slug: hotelSlug },
     include: {
       categories: {
         orderBy: { displayOrder: 'asc' },
-        include: {
-          items: {
-            orderBy: { displayOrder: 'asc' },
-          },
-        },
+        include: { items: { orderBy: { displayOrder: 'asc' } } },
       },
     },
   });
 
-  // If the hotel doesn't exist, show a 404 page
   if (!hotel) return notFound();
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-20">
-      {/* Header */}
-      <header className="bg-white shadow-sm p-6 text-center sticky top-0 z-10">
-        {hotel.logoUrl && (
-          <Image 
-            src={hotel.logoUrl} 
-            alt={hotel.name} 
-            width={60} 
-            height={60} 
-            className="mx-auto rounded-full mb-2 object-cover" 
-          />
-        )}
-        <h1 className="text-2xl font-bold text-gray-900">{hotel.name}</h1>
-        <p className="text-sm text-gray-500 mt-1">Welcome! Scan complete.</p>
+    <main className="min-h-screen bg-background pb-20">
+      {/* Elegant Header */}
+      <header className="bg-white/80 backdrop-blur-md border-b border-linen p-8 text-center sticky top-0 z-10">
+        <h1 className="font-serif text-4xl text-charcoal mb-1">{hotel.name}</h1>
+        <div className="w-16 h-1 bg-amber mx-auto rounded-full"></div>
+        <p className="text-sm text-charcoal/60 mt-3 font-sans tracking-wide uppercase">Digital Menu</p>
       </header>
 
-      {/* Menu Categories */}
-      <div className="p-4 space-y-8 max-w-2xl mx-auto">
+      {/* Menu Content */}
+      <div className="p-6 space-y-12 max-w-2xl mx-auto">
         {hotel.categories.map((category) => (
           <section key={category.id}>
-            <h2 className="text-xl font-bold text-gray-800 mb-4 border-b-2 border-amber-500 pb-2">
-              {category.name}
-            </h2>
+            <div className="flex items-center gap-4 mb-8">
+              <div className="flex-1 h-px bg-linen"></div>
+              <h2 className="font-serif text-2xl text-sage tracking-wide">
+                {category.name}
+              </h2>
+              <div className="flex-1 h-px bg-linen"></div>
+            </div>
             
-            <div className="space-y-4">
+            <div className="space-y-8">
               {category.items.map((item) => {
                 const isSoldOut = !item.isAvailable;
                 
                 return (
-                  <div 
+                  <article 
                     key={item.id} 
-                    className={`flex gap-4 bg-white p-4 rounded-xl shadow-sm border transition-all ${
-                      isSoldOut ? 'opacity-60 border-gray-200' : 'border-transparent hover:shadow-md'
-                    }`}
+                    className={`flex gap-6 transition-all ${isSoldOut ? 'opacity-50 grayscale' : ''}`}
                   >
-                    {/* Image */}
-                    {item.imageUrl && (
-                      <div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden">
+                    {/* Smart Image with fallback */}
+                    <div className="relative w-28 h-28 flex-shrink-0 rounded-lg overflow-hidden border border-linen shadow-sm">
+                      {item.imageUrl ? (
                         <Image 
                           src={item.imageUrl} 
                           alt={item.name} 
                           fill
                           className="object-cover"
-                          sizes="96px"
+                          sizes="112px"
                         />
-                        {isSoldOut && (
-                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
-                            <span className="text-white text-xs font-bold bg-red-600 px-2 py-1 rounded">
-                              SOLD OUT
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-amber/20 to-sage/20 flex items-center justify-center">
+                          <span className="font-serif text-3xl text-charcoal/40">{item.name.charAt(0)}</span>
+                        </div>
+                      )}
+                      {isSoldOut && (
+                        <div className="absolute inset-0 bg-charcoal/60 flex items-center justify-center">
+                          <span className="text-background text-xs font-bold uppercase tracking-widest">
+                            Sold Out
+                          </span>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Details */}
-                    <div className="flex-1 flex flex-col">
-                      <div className="flex justify-between items-start">
-                        <h3 className="font-bold text-gray-900 text-lg leading-tight">{item.name}</h3>
-                        <span className="font-bold text-amber-600 text-lg ml-2 whitespace-nowrap">
+                    <div className="flex-1">
+                      <div className="flex justify-between items-baseline gap-4">
+                        <h3 className="font-serif text-xl text-charcoal leading-tight">
+                          {item.name}
+                        </h3>
+                        <span className="font-serif text-lg text-amber font-semibold whitespace-nowrap">
                           ${Number(item.price).toFixed(2)}
                         </span>
                       </div>
                       
-                      <p className="text-sm text-gray-600 mt-1 line-clamp-2">{item.description}</p>
+                      <p className="text-sm text-charcoal/70 mt-2 leading-relaxed font-sans">
+                        {item.description}
+                      </p>
                       
-                      <div className="mt-auto pt-2 flex items-center gap-2 flex-wrap">
-                        <span className="text-xs text-gray-500 flex items-center gap-1">
-                          ⏱️ {item.prepTimeMins} mins
+                      <div className="mt-3 flex items-center gap-3 flex-wrap">
+                        <span className="text-xs text-sage/80 flex items-center gap-1 font-sans">
+                          ⏱️ {item.prepTimeMins} min
                         </span>
                         {item.dietaryTags.map((tag) => (
                           <span 
                             key={tag} 
-                            className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full"
+                            className="text-[10px] uppercase tracking-wider border border-sage/30 text-sage px-2 py-0.5 rounded-full font-sans"
                           >
                             {tag}
                           </span>
                         ))}
                       </div>
                     </div>
-                  </div>
+                  </article>
                 );
               })}
             </div>
